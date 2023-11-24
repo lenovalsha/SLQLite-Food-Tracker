@@ -38,11 +38,31 @@ namespace SLQLite_Food_Tracker
                             command.ExecuteNonQuery();
                         }
                     }
+                    AddMealsAutomatically();
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"An error occurred: {ex.Message}");
+            }
+        }
+        public static void AddMealsAutomatically()
+        {
+            using(SQLiteConnection connection = new SQLiteConnection(connString))
+            {
+                connection.Open();
+                string[] meals = {"Breakfast", "Lunch", "Supper", "Snack" };
+
+                using(SQLiteCommand cmd = new SQLiteCommand(connection))
+                {
+                    for(int i=0;i<meals.Length;i++)
+                    {
+                        cmd.CommandText = @"INSERT INTO Meals(Name) Values(@name)";
+                        cmd.Parameters.AddWithValue("@name", meals[i]);
+                        cmd.ExecuteNonQuery();
+                        cmd.Parameters.Clear();
+                    }
+                }
             }
         }
     }

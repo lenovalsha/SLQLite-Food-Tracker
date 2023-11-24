@@ -27,7 +27,5 @@ namespace SLQLite_Food_Tracker
             Application.Run(new Form1());
 
         }
-       
-
     }
 }
