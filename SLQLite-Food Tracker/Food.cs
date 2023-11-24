@@ -13,6 +13,7 @@ namespace SLQLite_Food_Tracker
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public DateTime FoodDate { get; set; }
 
         public Meal Meal { get; set; }
         public int MealId { get; set; }

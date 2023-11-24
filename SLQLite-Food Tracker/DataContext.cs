@@ -11,10 +11,17 @@ namespace WinFormUI
 {
     public class DataContextL: DbContext
     {
-      
+        private readonly string _dbPath;
+        public DataContextL(string dbPath)
+        {
+            _dbPath = dbPath;
+        }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite("Data Source = FoodData.db"); //make sure to create this class
+            optionsBuilder.UseSqlite($"Data Source={_dbPath}", options =>
+            {
+                options.MigrationsAssembly(typeof(DataContextL).Assembly.FullName);
+            }); //make sure to create this class
         }
         //create our tables
         public DbSet<Food> Foods { get; set; } //Table

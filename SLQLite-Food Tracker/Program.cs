@@ -6,6 +6,9 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WinFormUI;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Data.Sqlite;
 
 namespace SLQLite_Food_Tracker
 {
@@ -17,12 +20,14 @@ namespace SLQLite_Food_Tracker
         [STAThread]
         static void Main()
         {
-            DatabaseFacade facade = new DatabaseFacade(new DataContextL());
-            facade.EnsureCreated();
+           
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            Helper.InitializeDatabase();
             Application.Run(new Form1());
 
         }
+       
+
     }
 }
