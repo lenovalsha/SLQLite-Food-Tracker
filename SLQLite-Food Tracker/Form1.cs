@@ -7,8 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using WinFormUI;
-
+using System.Data.SQLite;
 namespace SLQLite_Food_Tracker
 {
     public partial class Form1 : Form
@@ -28,32 +27,11 @@ namespace SLQLite_Food_Tracker
 
             return newFood;
         }
+        //show Data in table
+        private 
         public void Create()
         {
-            //using (DataContextL contextL= new DataContextL())
-            //{
-            //if (cmbMeal.SelectedItem != null && txtFood.Text != String.Empty)
-            //{
-
-            //   contextL.Foods.Add(MakeNewFood());
-            //    contextL.SaveChanges(); //goes through the context class and looks through the pending changes to add to the database (update, creations, deletions)
-            //    //if (MakeNewFood().FoodDate >= DateTime.Today && MakeNewFood().FoodDate < DateTime.Today.AddDays(1))
-            //    //{
-            //    //    ShowToday();
-            //    //}
-            //    //else
-            //    //    ShowAll();
-
-            //}
-            //else
-            //{
-            //    MessageBox.Show("Enter all data necessary");
-            //}
-            //    var name = txtFood.Text;
-                
-
-            //    contextL.Foods.Add(new Food() { Name = name });
-            //}
+           
         }
         public void Read()
         {
@@ -61,6 +39,11 @@ namespace SLQLite_Food_Tracker
         }
         public void Update() { } 
         public void Delete()
+        {
+
+        }
+
+        private void btnCreate_Click(object sender, EventArgs e)
         {
 
         }
