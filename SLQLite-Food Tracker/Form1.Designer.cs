@@ -264,6 +264,7 @@
             this.Controls.Add(this.dgvData);
             this.Name = "Form1";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.grpFood.ResumeLayout(false);
             this.grpFood.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvData)).EndInit();

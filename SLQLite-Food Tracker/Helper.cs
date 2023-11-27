@@ -6,13 +6,15 @@ using System.Threading.Tasks;
 using System.Data.SQLite;
 using System.IO;
 using System.Drawing.Text;
+using System.Windows.Forms;
 
 namespace SLQLite_Food_Tracker
 {
     public static class Helper
     {
-        private static string filepath = "..\\..\\Files\\FoodTracker.db";
-        private static string connString = $@"Data Source={filepath}; Version=3";
+        public static string filepath = "..\\..\\Files\\FoodTracker.db";
+        public static string connString = $@"Data Source={filepath}; Version=3";
+
 
         public static void InitializeDatabase()
         {
@@ -27,13 +29,13 @@ namespace SLQLite_Food_Tracker
 
                         string createMealTableQry = @"CREATE TABLE IF NOT EXISTS Meals (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT NOT NULL);";
 
-                        string createFoodableQry = @"CREATE TABLE IF NOT EXISTS Foods (Id INTEGER PRIMARY KEY AUTOINCREMENT,Name TEXT NOT NULL);";
+                        string createFoodableQry = @"CREATE TABLE IF NOT EXISTS Foods (Id INTEGER PRIMARY KEY AUTOINCREMENT,Name TEXT NOT NULL, MealId INTEGER, Foreign Key (MealId) References Meals(Id));";
 
                         using (var command = new SQLiteCommand(connection))
                         {
                             command.CommandText = createMealTableQry;
                             command.ExecuteNonQuery();
-                            
+
 
                             command.CommandText = createFoodableQry;
                             command.ExecuteNonQuery();
@@ -47,16 +49,17 @@ namespace SLQLite_Food_Tracker
                 Console.WriteLine($"An error occurred: {ex.Message}");
             }
         }
+
         public static void AddMealsAutomatically()
         {
-            using(SQLiteConnection connection = new SQLiteConnection(connString))
+            using (SQLiteConnection connection = new SQLiteConnection(connString))
             {
                 connection.Open();
-                string[] meals = {"Breakfast", "Lunch", "Supper", "Snack" };
+                string[] meals = { "Breakfast", "Lunch", "Supper", "Snack" };
 
-                using(SQLiteCommand cmd = new SQLiteCommand(connection))
+                using (SQLiteCommand cmd = new SQLiteCommand(connection))
                 {
-                    for(int i=0;i<meals.Length;i++)
+                    for (int i = 0; i < meals.Length; i++)
                     {
                         cmd.CommandText = @"INSERT INTO Meals(Name) Values(@name)";
                         cmd.Parameters.AddWithValue("@name", meals[i]);
@@ -66,6 +69,78 @@ namespace SLQLite_Food_Tracker
                 }
             }
         }
-       
+        //get the list of meals
+        public static void GetMealsList(ComboBox cmb)
+        {
+            cmb.DisplayMember = "Name";
+            var conn = new SQLiteConnection(connString);
+            conn.Open();
+            var cmd = new SQLiteCommand(conn);
+            
+            cmd.CommandText = "SELECT * FROM MEALS";
+            SQLiteDataReader dr = cmd.ExecuteReader();
+            while (dr.Read())
+            {
+                int id = dr.GetInt32(0);        // Assuming Id is of type integer
+                string name = dr.GetString(1);  // Assuming Name is of type string
+                cmb.Items.Add(new {Name = name});  
+                //tmpDataGridView.Rows.Insert(0, id, name);
+            }
+            conn.Close();
+        }
+        private static int GetMealIdByName(string mealName, SQLiteConnection conn)
+        {
+            var cmd = new SQLiteCommand(conn);
+            cmd.CommandText = "Select Id from MEALS Where Name=@name";
+            //Console.WriteLine("Executing query: " + cmd.CommandText);
+            //Console.WriteLine("Parameter value: " + mealName);
+            cmd.Parameters.AddWithValue("name", mealName);
+            object result = cmd.ExecuteScalar();
+            // Check if the result is not null before converting to int
+            int id = result != null ? Convert.ToInt32(result) : -1;
+            return id;
+        }
+        public static void Create(string tmpname, string mealName)
+        {
+            var con = new SQLiteConnection(connString);
+            con.Open();
+            var cmd = new SQLiteCommand(con);
+            int mealId = GetMealIdByName(mealName, con);
+            cmd.CommandText = "INSERT INTO FOODS (NAME, MealId) VALUES(@name, @mealId)";
+
+            string name = tmpname;
+            cmd.Parameters.AddWithValue("name", name);
+            cmd.Parameters.AddWithValue("mealId", mealId);
+
+            cmd.ExecuteNonQuery();
+            con.Close();
+        }
+        public static void Read(DataGridView tmpDataGridView)
+        {
+            tmpDataGridView.Columns.Add("Id", "ID");      // Add a column for Id
+            tmpDataGridView.Columns.Add("Name", "Name");
+            tmpDataGridView.Columns.Add("MealId", "Meal");
+
+            var conn = new SQLiteConnection(connString);
+            conn.Open();
+            var cmd = new SQLiteCommand(conn);
+            cmd.CommandText = "SELECT FOODS.Id, FOODS.Name, MEALS.Name AS MealName\r\nFROM FOODS\r\nJOIN MEALS ON FOODS.MealId = MEALS.Id";
+            SQLiteDataReader dr = cmd.ExecuteReader();
+            while (dr.Read())
+            {
+                int id = dr.GetInt32(0);        // Assuming Id is of type integer
+                string name = dr.GetString(1);  // Assuming Name is of type string
+                string mealName = dr.GetString(2); 
+                tmpDataGridView.Rows.Insert(0, id, name,mealName);
+            }
+            conn.Close();
+
+        }
+        public static void Update() { }
+        public static void Delete()
+        {
+
+        }
+
     }
 }
