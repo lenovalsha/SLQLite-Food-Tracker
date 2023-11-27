@@ -20,23 +20,14 @@ namespace SLQLite_Food_Tracker
             
         }
        
-        private Food MakeNewFood()
-        {
-            var newFood = new Food
-            {
-                Name = txtFood.Text,
-                MealId = (cmbMeal.SelectedItem as Meal).Id,
-                FoodDate = dtpDate.Value
-            };
-            return newFood;
-        }
+       
         private void btnCreate_Click(object sender, EventArgs e)
         {
             //ShowData();
             dgvData.Rows.Clear();
             if (!string.IsNullOrEmpty(txtFood.Text) && (cmbMeal.SelectedItem != null))
             {
-            Helper.Create(txtFood.Text, cmbMeal.Text);
+            Helper.Create(txtFood.Text, cmbMeal.Text, dtpDate.Value);
             Helper.Read(dgvData);
             }
         }
@@ -45,6 +36,12 @@ namespace SLQLite_Food_Tracker
         {
             Helper.GetMealsList(cmbMeal);
             Helper.Read(dgvData);
+        }
+
+        private void btnSearch_Click(object sender, EventArgs e)
+        {
+            dgvData.Rows.Clear();
+            Helper.ShowCertainDate(dtDisplayToDGV.Value,dgvData);
         }
     }
 }

@@ -29,7 +29,7 @@ namespace SLQLite_Food_Tracker
 
                         string createMealTableQry = @"CREATE TABLE IF NOT EXISTS Meals (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT NOT NULL);";
 
-                        string createFoodableQry = @"CREATE TABLE IF NOT EXISTS Foods (Id INTEGER PRIMARY KEY AUTOINCREMENT,Name TEXT NOT NULL, MealId INTEGER, Foreign Key (MealId) References Meals(Id));";
+                        string createFoodableQry = @"CREATE TABLE IF NOT EXISTS Foods (Id INTEGER PRIMARY KEY AUTOINCREMENT,Name TEXT NOT NULL, MealId INTEGER, FoodDate Date NOT NULL, Foreign Key (MealId) References Meals(Id));";
 
                         using (var command = new SQLiteCommand(connection))
                         {
@@ -100,17 +100,44 @@ namespace SLQLite_Food_Tracker
             int id = result != null ? Convert.ToInt32(result) : -1;
             return id;
         }
-        public static void Create(string tmpname, string mealName)
+        public static void ShowCertainDate(DateTime thisDate, DataGridView tmpDataGridView)
+        {
+     
+            var conn = new SQLiteConnection(connString);
+            conn.Open();
+            var cmd = new SQLiteCommand(conn);
+
+            cmd.CommandText = "SELECT FOODS.Id, FOODS.FoodDate, FOODS.Name, MEALS.Name AS MealName " +
+                      "FROM FOODS " +
+                      "JOIN MEALS ON FOODS.MealId = MEALS.Id " +
+                      "WHERE FOODDATE >= @date AND FoodDate < @endDate";
+            cmd.Parameters.Add(new SQLiteParameter("@date", thisDate.Date));
+            cmd.Parameters.Add(new SQLiteParameter("@endDate", thisDate.Date.AddDays(1)));
+            Console.WriteLine("Executing query: " + cmd.CommandText);
+            SQLiteDataReader dr = cmd.ExecuteReader();
+            while (dr.Read())
+            {
+                int id = dr.GetInt32(0);
+                DateTime foodDate = dr.GetDateTime(1);// Assuming Id is of type integer
+                string name = dr.GetString(2);  // Assuming Name is of type string
+                string mealName = dr.GetString(3);
+                tmpDataGridView.Rows.Insert(0, id, foodDate, name, mealName);
+            }
+            conn.Close();
+
+        }
+        public static void Create(string tmpname, string mealName, DateTime foodDate)
         {
             var con = new SQLiteConnection(connString);
             con.Open();
             var cmd = new SQLiteCommand(con);
             int mealId = GetMealIdByName(mealName, con);
-            cmd.CommandText = "INSERT INTO FOODS (NAME, MealId) VALUES(@name, @mealId)";
+            cmd.CommandText = "INSERT INTO FOODS (NAME, MealId, FoodDate) VALUES(@name, @mealId,@foodDate)";
 
             string name = tmpname;
             cmd.Parameters.AddWithValue("name", name);
             cmd.Parameters.AddWithValue("mealId", mealId);
+            cmd.Parameters.AddWithValue("foodDate", foodDate);
 
             cmd.ExecuteNonQuery();
             con.Close();
@@ -118,23 +145,25 @@ namespace SLQLite_Food_Tracker
         public static void Read(DataGridView tmpDataGridView)
         {
             tmpDataGridView.Columns.Add("Id", "ID");      // Add a column for Id
+            tmpDataGridView.Columns.Add("FoodDate", "Date");
             tmpDataGridView.Columns.Add("Name", "Name");
             tmpDataGridView.Columns.Add("MealId", "Meal");
+
 
             var conn = new SQLiteConnection(connString);
             conn.Open();
             var cmd = new SQLiteCommand(conn);
-            cmd.CommandText = "SELECT FOODS.Id, FOODS.Name, MEALS.Name AS MealName\r\nFROM FOODS\r\nJOIN MEALS ON FOODS.MealId = MEALS.Id";
+            cmd.CommandText = "SELECT FOODS.Id, FOODS.FoodDate, FOODS.Name, MEALS.Name AS MealName\r\nFROM FOODS\r\nJOIN MEALS ON FOODS.MealId = MEALS.Id";
             SQLiteDataReader dr = cmd.ExecuteReader();
             while (dr.Read())
             {
-                int id = dr.GetInt32(0);        // Assuming Id is of type integer
-                string name = dr.GetString(1);  // Assuming Name is of type string
-                string mealName = dr.GetString(2); 
-                tmpDataGridView.Rows.Insert(0, id, name,mealName);
+                int id = dr.GetInt32(0);
+                DateTime foodDate = dr.GetDateTime(1);// Assuming Id is of type integer
+                string name = dr.GetString(2);  // Assuming Name is of type string
+                string mealName = dr.GetString(3); 
+                tmpDataGridView.Rows.Insert(0, id, foodDate, name,mealName);
             }
             conn.Close();
-
         }
         public static void Update() { }
         public static void Delete()
