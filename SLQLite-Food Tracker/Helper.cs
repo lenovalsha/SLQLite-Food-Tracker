@@ -126,6 +126,29 @@ namespace SLQLite_Food_Tracker
             conn.Close();
 
         }
+        public static void DisplayAll(DataGridView tmpDataGridView)
+        {
+            tmpDataGridView.Rows.Clear();
+            var conn = new SQLiteConnection(connString);
+            conn.Open();
+            var cmd = new SQLiteCommand(conn);
+
+            cmd.CommandText = "SELECT FOODS.Id, FOODS.FoodDate, FOODS.Name, MEALS.Name AS MealName " +
+                      "FROM FOODS " +
+                      "JOIN MEALS ON FOODS.MealId = MEALS.Id ";
+            
+            Console.WriteLine("Executing query: " + cmd.CommandText);
+            SQLiteDataReader dr = cmd.ExecuteReader();
+            while (dr.Read())
+            {
+                int id = dr.GetInt32(0);
+                DateTime foodDate = dr.GetDateTime(1);// Assuming Id is of type integer
+                string name = dr.GetString(2);  // Assuming Name is of type string
+                string mealName = dr.GetString(3);
+                tmpDataGridView.Rows.Insert(0, id, foodDate, name, mealName);
+            }
+            conn.Close();
+        }
         public static void Create(string tmpname, string mealName, DateTime foodDate)
         {
             var con = new SQLiteConnection(connString);

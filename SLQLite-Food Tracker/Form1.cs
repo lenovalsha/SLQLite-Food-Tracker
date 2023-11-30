@@ -43,5 +43,16 @@ namespace SLQLite_Food_Tracker
             dgvData.Rows.Clear();
             Helper.ShowCertainDate(dtDisplayToDGV.Value,dgvData);
         }
+
+        private void btnToday_Click(object sender, EventArgs e)
+        {
+            dgvData.Rows.Clear();
+            Helper.ShowCertainDate(DateTime.Today, dgvData);
+        }
+
+        private void btnDisplay_Click(object sender, EventArgs e)
+        {
+            Helper.DisplayAll(dgvData);
+        }
     }
 }

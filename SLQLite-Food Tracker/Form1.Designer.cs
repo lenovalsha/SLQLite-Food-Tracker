@@ -97,6 +97,7 @@
             this.btnDisplay.TabIndex = 21;
             this.btnDisplay.Text = "Display All";
             this.btnDisplay.UseVisualStyleBackColor = true;
+            this.btnDisplay.Click += new System.EventHandler(this.btnDisplay_Click);
             // 
             // btnSearch
             // 
@@ -132,6 +133,7 @@
             this.btnToday.TabIndex = 17;
             this.btnToday.Text = "Today";
             this.btnToday.UseVisualStyleBackColor = true;
+            this.btnToday.Click += new System.EventHandler(this.btnToday_Click);
             // 
             // grpFood
             // 
