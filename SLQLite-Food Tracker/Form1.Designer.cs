@@ -28,17 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.lblSnack = new System.Windows.Forms.Label();
-            this.lblSupper = new System.Windows.Forms.Label();
-            this.lblLunch = new System.Windows.Forms.Label();
-            this.lblBreakfast = new System.Windows.Forms.Label();
             this.btnDisplay = new System.Windows.Forms.Button();
             this.btnSearch = new System.Windows.Forms.Button();
             this.dtDisplayToDGV = new System.Windows.Forms.DateTimePicker();
             this.label3 = new System.Windows.Forms.Label();
             this.btnToday = new System.Windows.Forms.Button();
             this.grpFood = new System.Windows.Forms.GroupBox();
-            this.btnCancel = new System.Windows.Forms.Button();
             this.btnDelete = new System.Windows.Forms.Button();
             this.btnUpdate = new System.Windows.Forms.Button();
             this.cmbMeal = new System.Windows.Forms.ComboBox();
@@ -52,42 +47,6 @@
             this.grpFood.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvData)).BeginInit();
             this.SuspendLayout();
-            // 
-            // lblSnack
-            // 
-            this.lblSnack.AutoSize = true;
-            this.lblSnack.Location = new System.Drawing.Point(6, 411);
-            this.lblSnack.Name = "lblSnack";
-            this.lblSnack.Size = new System.Drawing.Size(35, 13);
-            this.lblSnack.TabIndex = 25;
-            this.lblSnack.Text = "label4";
-            // 
-            // lblSupper
-            // 
-            this.lblSupper.AutoSize = true;
-            this.lblSupper.Location = new System.Drawing.Point(6, 375);
-            this.lblSupper.Name = "lblSupper";
-            this.lblSupper.Size = new System.Drawing.Size(35, 13);
-            this.lblSupper.TabIndex = 24;
-            this.lblSupper.Text = "label4";
-            // 
-            // lblLunch
-            // 
-            this.lblLunch.AutoSize = true;
-            this.lblLunch.Location = new System.Drawing.Point(6, 334);
-            this.lblLunch.Name = "lblLunch";
-            this.lblLunch.Size = new System.Drawing.Size(35, 13);
-            this.lblLunch.TabIndex = 23;
-            this.lblLunch.Text = "label4";
-            // 
-            // lblBreakfast
-            // 
-            this.lblBreakfast.AutoSize = true;
-            this.lblBreakfast.Location = new System.Drawing.Point(6, 286);
-            this.lblBreakfast.Name = "lblBreakfast";
-            this.lblBreakfast.Size = new System.Drawing.Size(35, 13);
-            this.lblBreakfast.TabIndex = 22;
-            this.lblBreakfast.Text = "label4";
             // 
             // btnDisplay
             // 
@@ -137,7 +96,6 @@
             // 
             // grpFood
             // 
-            this.grpFood.Controls.Add(this.btnCancel);
             this.grpFood.Controls.Add(this.btnDelete);
             this.grpFood.Controls.Add(this.btnUpdate);
             this.grpFood.Controls.Add(this.cmbMeal);
@@ -154,15 +112,6 @@
             this.grpFood.TabStop = false;
             this.grpFood.Text = "groupBox1";
             // 
-            // btnCancel
-            // 
-            this.btnCancel.Location = new System.Drawing.Point(466, 123);
-            this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(75, 23);
-            this.btnCancel.TabIndex = 9;
-            this.btnCancel.Text = "Cancel";
-            this.btnCancel.UseVisualStyleBackColor = true;
-            // 
             // btnDelete
             // 
             this.btnDelete.Location = new System.Drawing.Point(369, 123);
@@ -171,6 +120,7 @@
             this.btnDelete.TabIndex = 8;
             this.btnDelete.Text = "Delete";
             this.btnDelete.UseVisualStyleBackColor = true;
+            this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
             // 
             // btnUpdate
             // 
@@ -178,8 +128,9 @@
             this.btnUpdate.Name = "btnUpdate";
             this.btnUpdate.Size = new System.Drawing.Size(75, 23);
             this.btnUpdate.TabIndex = 7;
-            this.btnUpdate.Text = "Update";
+            this.btnUpdate.Text = "UPDATE";
             this.btnUpdate.UseVisualStyleBackColor = true;
+            this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click);
             // 
             // cmbMeal
             // 
@@ -254,10 +205,6 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(876, 666);
-            this.Controls.Add(this.lblSnack);
-            this.Controls.Add(this.lblSupper);
-            this.Controls.Add(this.lblLunch);
-            this.Controls.Add(this.lblBreakfast);
             this.Controls.Add(this.btnDisplay);
             this.Controls.Add(this.btnSearch);
             this.Controls.Add(this.dtDisplayToDGV);
@@ -277,18 +224,12 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.Label lblSnack;
-        private System.Windows.Forms.Label lblSupper;
-        private System.Windows.Forms.Label lblLunch;
-        private System.Windows.Forms.Label lblBreakfast;
         private System.Windows.Forms.Button btnDisplay;
         private System.Windows.Forms.Button btnSearch;
         private System.Windows.Forms.DateTimePicker dtDisplayToDGV;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button btnToday;
         private System.Windows.Forms.GroupBox grpFood;
-        private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnDelete;
         private System.Windows.Forms.Button btnUpdate;
         private System.Windows.Forms.ComboBox cmbMeal;

@@ -34,8 +34,26 @@ namespace SLQLite_Food_Tracker
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            dgvData.Columns.Add("Id", "ID");      // Add a column for Id
+            dgvData.Columns.Add("FoodDate", "Date");
+            dgvData.Columns.Add("Name", "Name");
+            dgvData.Columns.Add("MealId", "Meal");
+            dgvData.Columns[0].Visible = false;
+
             Helper.GetMealsList(cmbMeal);
             Helper.Read(dgvData);
+            dgvData.SelectionChanged += DgvData_SelectionChanged; ;
+
+        }
+
+        private void DgvData_SelectionChanged(object sender, EventArgs e)
+        {
+          
+           
+
+            Helper.SelectedRow(dgvData, txtFood, cmbMeal, dtpDate);
+            
+
         }
 
         private void btnSearch_Click(object sender, EventArgs e)
@@ -52,7 +70,22 @@ namespace SLQLite_Food_Tracker
 
         private void btnDisplay_Click(object sender, EventArgs e)
         {
-            Helper.DisplayAll(dgvData);
+            Helper.Read(dgvData);
+        }
+
+        private void btnUpdate_Click(object sender, EventArgs e)
+        {
+            Helper.Update(dgvData, btnUpdate, txtFood, cmbMeal, dtpDate);
+            Helper.Read(dgvData);
+
+
+        }
+
+        private void btnDelete_Click(object sender, EventArgs e)
+        {
+            Helper.Delete();
+            Helper.Read(dgvData);
+
         }
     }
 }

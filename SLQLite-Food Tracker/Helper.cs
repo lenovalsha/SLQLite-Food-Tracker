@@ -7,6 +7,7 @@ using System.Data.SQLite;
 using System.IO;
 using System.Drawing.Text;
 using System.Windows.Forms;
+using System.Drawing;
 
 namespace SLQLite_Food_Tracker
 {
@@ -14,6 +15,7 @@ namespace SLQLite_Food_Tracker
     {
         public static string filepath = "..\\..\\Files\\FoodTracker.db";
         public static string connString = $@"Data Source={filepath}; Version=3";
+        public static int selectedFood;
 
 
         public static void InitializeDatabase()
@@ -76,14 +78,14 @@ namespace SLQLite_Food_Tracker
             var conn = new SQLiteConnection(connString);
             conn.Open();
             var cmd = new SQLiteCommand(conn);
-            
+
             cmd.CommandText = "SELECT * FROM MEALS";
             SQLiteDataReader dr = cmd.ExecuteReader();
             while (dr.Read())
             {
                 int id = dr.GetInt32(0);        // Assuming Id is of type integer
                 string name = dr.GetString(1);  // Assuming Name is of type string
-                cmb.Items.Add(new {Name = name});  
+                cmb.Items.Add(new { Name = name });
                 //tmpDataGridView.Rows.Insert(0, id, name);
             }
             conn.Close();
@@ -102,7 +104,7 @@ namespace SLQLite_Food_Tracker
         }
         public static void ShowCertainDate(DateTime thisDate, DataGridView tmpDataGridView)
         {
-     
+
             var conn = new SQLiteConnection(connString);
             conn.Open();
             var cmd = new SQLiteCommand(conn);
@@ -110,7 +112,7 @@ namespace SLQLite_Food_Tracker
             cmd.CommandText = "SELECT FOODS.Id, FOODS.FoodDate, FOODS.Name, MEALS.Name AS MealName " +
                       "FROM FOODS " +
                       "JOIN MEALS ON FOODS.MealId = MEALS.Id " +
-                      "WHERE FOODDATE >= @date AND FoodDate < @endDate";
+                      "WHERE FOODDATE >= @date AND FoodDate < @endDate ORDER BY FOODDATE ASC";
             cmd.Parameters.Add(new SQLiteParameter("@date", thisDate.Date));
             cmd.Parameters.Add(new SQLiteParameter("@endDate", thisDate.Date.AddDays(1)));
             Console.WriteLine("Executing query: " + cmd.CommandText);
@@ -126,29 +128,7 @@ namespace SLQLite_Food_Tracker
             conn.Close();
 
         }
-        public static void DisplayAll(DataGridView tmpDataGridView)
-        {
-            tmpDataGridView.Rows.Clear();
-            var conn = new SQLiteConnection(connString);
-            conn.Open();
-            var cmd = new SQLiteCommand(conn);
-
-            cmd.CommandText = "SELECT FOODS.Id, FOODS.FoodDate, FOODS.Name, MEALS.Name AS MealName " +
-                      "FROM FOODS " +
-                      "JOIN MEALS ON FOODS.MealId = MEALS.Id ";
-            
-            Console.WriteLine("Executing query: " + cmd.CommandText);
-            SQLiteDataReader dr = cmd.ExecuteReader();
-            while (dr.Read())
-            {
-                int id = dr.GetInt32(0);
-                DateTime foodDate = dr.GetDateTime(1);// Assuming Id is of type integer
-                string name = dr.GetString(2);  // Assuming Name is of type string
-                string mealName = dr.GetString(3);
-                tmpDataGridView.Rows.Insert(0, id, foodDate, name, mealName);
-            }
-            conn.Close();
-        }
+       
         public static void Create(string tmpname, string mealName, DateTime foodDate)
         {
             var con = new SQLiteConnection(connString);
@@ -167,31 +147,77 @@ namespace SLQLite_Food_Tracker
         }
         public static void Read(DataGridView tmpDataGridView)
         {
-            tmpDataGridView.Columns.Add("Id", "ID");      // Add a column for Id
-            tmpDataGridView.Columns.Add("FoodDate", "Date");
-            tmpDataGridView.Columns.Add("Name", "Name");
-            tmpDataGridView.Columns.Add("MealId", "Meal");
-
+            tmpDataGridView.Rows.Clear();
 
             var conn = new SQLiteConnection(connString);
             conn.Open();
             var cmd = new SQLiteCommand(conn);
-            cmd.CommandText = "SELECT FOODS.Id, FOODS.FoodDate, FOODS.Name, MEALS.Name AS MealName\r\nFROM FOODS\r\nJOIN MEALS ON FOODS.MealId = MEALS.Id";
+            cmd.CommandText = "SELECT FOODS.Id, FOODS.FoodDate, FOODS.Name, MEALS.Name AS MealName\r\nFROM FOODS\r\nJOIN MEALS ON FOODS.MealId = MEALS.Id ORDER BY FOODDATE ASC";
             SQLiteDataReader dr = cmd.ExecuteReader();
             while (dr.Read())
             {
                 int id = dr.GetInt32(0);
                 DateTime foodDate = dr.GetDateTime(1);// Assuming Id is of type integer
                 string name = dr.GetString(2);  // Assuming Name is of type string
-                string mealName = dr.GetString(3); 
-                tmpDataGridView.Rows.Insert(0, id, foodDate, name,mealName);
+                string mealName = dr.GetString(3);
+                tmpDataGridView.Rows.Insert(0, id, foodDate, name, mealName);
             }
             conn.Close();
         }
-        public static void Update() { }
-        public static void Delete()
+        public static void Update(DataGridView tmpDataGridView, Button btnUpdate, TextBox txtName, ComboBox cmbMealName, DateTimePicker dtpFoodDate)
         {
 
+                if (selectedFood != null)
+                {
+                    int firstColumnIntValue = Convert.ToInt32(selectedFood);
+                    // Now you can use firstColumnIntValue
+                    var conn = new SQLiteConnection(connString);
+                    conn.Open();
+                    var cmd = new SQLiteCommand(conn);
+                    int mealId = GetMealIdByName(cmbMealName.Text, conn);
+                    cmd.CommandText = "UPDATE FOODS SET NAME=@NAME, MEALID=@MEALID, FOODDATE=@FOODDATE WHERE ID =@ID";
+                    cmd.Parameters.AddWithValue("@ID", selectedFood);
+                    cmd.Parameters.AddWithValue("@NAME", txtName.Text);
+                    cmd.Parameters.AddWithValue("@MEALID", mealId);
+                    cmd.Parameters.AddWithValue("@FOODDATE", dtpFoodDate.Value);
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+
+                    MessageBox.Show("The selected entry has been updated");
+                }
+
+            
+         
+
+            //show it to our users what they are editing
+        }
+        public static void Delete()
+        {
+            //SelectedRow(tmpDataGridView, txtName, cmbMealName, dtpFoodDate);
+            var conn = new SQLiteConnection(connString);
+            conn.Open();
+            var cmd = new SQLiteCommand(conn);
+            cmd.CommandText = "DELETE FROM FOODS WHERE ID=@ID";
+            cmd.Parameters.AddWithValue("ID", selectedFood);
+            cmd.ExecuteNonQuery();
+            conn.Close();
+            MessageBox.Show("The entry has been deleted");
+
+        }
+        public static void SelectedRow(DataGridView tmpDataGridView, TextBox txtName, ComboBox cmbMealName, DateTimePicker dtpFoodDate)
+        {
+            if (tmpDataGridView.SelectedCells.Count > 0)
+            {
+                var selectedRowIndex = (int)tmpDataGridView.SelectedCells[0].RowIndex;
+                selectedFood = (int)tmpDataGridView.Rows[selectedRowIndex].Cells[0].Value;
+                txtName.Text = tmpDataGridView.Rows[selectedRowIndex].Cells["NAME"].Value.ToString();
+                cmbMealName.Text = tmpDataGridView.Rows[selectedRowIndex].Cells["MEALID"].Value.ToString();
+                string foodDateString = tmpDataGridView.Rows[selectedRowIndex].Cells["FOODDATE"].Value.ToString();
+                if (DateTime.TryParse(foodDateString, out DateTime foodDate))
+                {
+                    dtpFoodDate.Value = foodDate;
+                }
+            }
         }
 
     }
