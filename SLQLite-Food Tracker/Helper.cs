@@ -16,8 +16,6 @@ namespace SLQLite_Food_Tracker
         public static string filepath = "..\\..\\Files\\FoodTracker.db";
         public static string connString = $@"Data Source={filepath}; Version=3";
         public static int selectedFood;
-
-
         public static void InitializeDatabase()
         {
             try
@@ -140,7 +138,7 @@ namespace SLQLite_Food_Tracker
             string name = tmpname;
             cmd.Parameters.AddWithValue("name", name);
             cmd.Parameters.AddWithValue("mealId", mealId);
-            cmd.Parameters.AddWithValue("foodDate", foodDate);
+            cmd.Parameters.AddWithValue("foodDate", foodDate.ToLocalTime());
 
             cmd.ExecuteNonQuery();
             con.Close();
@@ -207,25 +205,40 @@ namespace SLQLite_Food_Tracker
         public static void SelectedRow(DataGridView tmpDataGridView, TextBox txtName, ComboBox cmbMealName, DateTimePicker dtpFoodDate)
         {
 
-            if (tmpDataGridView.SelectedCells.Count > 0 && tmpDataGridView.SelectedCells[0].Value != null)
+            if (tmpDataGridView.SelectedCells.Count > 0)
             {
                 var selectedRowIndex = (int)tmpDataGridView.SelectedCells[0].RowIndex;
-                selectedFood = (int)tmpDataGridView.Rows[selectedRowIndex].Cells[0].Value;
-                txtName.Text = tmpDataGridView.Rows[selectedRowIndex].Cells["NAME"].Value.ToString();
-                cmbMealName.Text = tmpDataGridView.Rows[selectedRowIndex].Cells["MEALID"].Value.ToString();
-                string foodDateString = tmpDataGridView.Rows[selectedRowIndex].Cells["FOODDATE"].Value.ToString();
-                if (DateTime.TryParse(foodDateString, out DateTime foodDate))
+
+                // Check if the selected row index is valid
+                if (selectedRowIndex >= 0 && selectedRowIndex < tmpDataGridView.Rows.Count)
                 {
-                    dtpFoodDate.Value = foodDate;
+                    // Get the selected row
+                    DataGridViewRow selectedRow = tmpDataGridView.Rows[selectedRowIndex];
+
+                    // Check if the selected cell is not null
+                    if (selectedRow.Cells["NAME"].Value != null)
+                    {
+                        selectedFood = (int)selectedRow.Cells[0].Value;
+                        txtName.Text = selectedRow.Cells["NAME"].Value.ToString();
+                        cmbMealName.Text = selectedRow.Cells["MEALID"].Value?.ToString() ?? string.Empty;
+
+                        // Check if the value is not null before converting to string
+                        object foodDateValue = selectedRow.Cells["FOODDATE"].Value;
+                        string foodDateString = foodDateValue != null ? foodDateValue.ToString() : string.Empty;
+
+                        if (DateTime.TryParse(foodDateString, out DateTime foodDate))
+                        {
+                            dtpFoodDate.Value = foodDate;
+                        }
+                    }
+                    else
+                    {
+                        // Handle the case where the selected cell is null (empty row)
+                        txtName.Text = string.Empty;
+                        cmbMealName.Text = string.Empty;
+                        dtpFoodDate.Value = DateTime.Now; // Set a default value or handle as needed
+                    }
                 }
-            }
-            else
-            {
-                // Handle the case where the selected cell is null (empty row)
-                // For example, you might want to clear the UI elements.
-                txtName.Text = string.Empty;
-                cmbMealName.Text = string.Empty;
-                dtpFoodDate.Value = DateTime.Now; // Set a default value or handle as needed
             }
         }
 

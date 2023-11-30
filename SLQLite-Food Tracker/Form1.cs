@@ -24,12 +24,12 @@ namespace SLQLite_Food_Tracker
         private void btnCreate_Click(object sender, EventArgs e)
         {
             //ShowData();
-            dgvData.Rows.Clear();
+            //dgvData.Rows.Clear();
             if (!string.IsNullOrEmpty(txtFood.Text) && (cmbMeal.SelectedItem != null))
             {
             Helper.Create(txtFood.Text, cmbMeal.Text, dtpDate.Value);
             Helper.Read(dgvData);
-            }else
+            }else 
             {
                 MessageBox.Show("Please ensure all data is filled in");
                 Helper.Read(dgvData);
@@ -53,12 +53,8 @@ namespace SLQLite_Food_Tracker
 
         private void DgvData_SelectionChanged(object sender, EventArgs e)
         {
-          
            
-
             Helper.SelectedRow(dgvData, txtFood, cmbMeal, dtpDate);
-            
-
         }
 
         private void btnSearch_Click(object sender, EventArgs e)
