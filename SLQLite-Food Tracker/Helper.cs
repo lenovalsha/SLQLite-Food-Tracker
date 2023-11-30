@@ -128,7 +128,7 @@ namespace SLQLite_Food_Tracker
             conn.Close();
 
         }
-       
+
         public static void Create(string tmpname, string mealName, DateTime foodDate)
         {
             var con = new SQLiteConnection(connString);
@@ -167,27 +167,27 @@ namespace SLQLite_Food_Tracker
         public static void Update(DataGridView tmpDataGridView, Button btnUpdate, TextBox txtName, ComboBox cmbMealName, DateTimePicker dtpFoodDate)
         {
 
-                if (selectedFood != null)
-                {
-                    int firstColumnIntValue = Convert.ToInt32(selectedFood);
-                    // Now you can use firstColumnIntValue
-                    var conn = new SQLiteConnection(connString);
-                    conn.Open();
-                    var cmd = new SQLiteCommand(conn);
-                    int mealId = GetMealIdByName(cmbMealName.Text, conn);
-                    cmd.CommandText = "UPDATE FOODS SET NAME=@NAME, MEALID=@MEALID, FOODDATE=@FOODDATE WHERE ID =@ID";
-                    cmd.Parameters.AddWithValue("@ID", selectedFood);
-                    cmd.Parameters.AddWithValue("@NAME", txtName.Text);
-                    cmd.Parameters.AddWithValue("@MEALID", mealId);
-                    cmd.Parameters.AddWithValue("@FOODDATE", dtpFoodDate.Value);
-                    cmd.ExecuteNonQuery();
-                    conn.Close();
+            if (selectedFood != null)
+            {
+                int firstColumnIntValue = Convert.ToInt32(selectedFood);
+                // Now you can use firstColumnIntValue
+                var conn = new SQLiteConnection(connString);
+                conn.Open();
+                var cmd = new SQLiteCommand(conn);
+                int mealId = GetMealIdByName(cmbMealName.Text, conn);
+                cmd.CommandText = "UPDATE FOODS SET NAME=@NAME, MEALID=@MEALID, FOODDATE=@FOODDATE WHERE ID =@ID";
+                cmd.Parameters.AddWithValue("@ID", selectedFood);
+                cmd.Parameters.AddWithValue("@NAME", txtName.Text);
+                cmd.Parameters.AddWithValue("@MEALID", mealId);
+                cmd.Parameters.AddWithValue("@FOODDATE", dtpFoodDate.Value);
+                cmd.ExecuteNonQuery();
+                conn.Close();
 
-                    MessageBox.Show("The selected entry has been updated");
-                }
+                MessageBox.Show("The selected entry has been updated");
+            }
 
-            
-         
+
+
 
             //show it to our users what they are editing
         }
@@ -206,7 +206,8 @@ namespace SLQLite_Food_Tracker
         }
         public static void SelectedRow(DataGridView tmpDataGridView, TextBox txtName, ComboBox cmbMealName, DateTimePicker dtpFoodDate)
         {
-            if (tmpDataGridView.SelectedCells.Count > 0)
+
+            if (tmpDataGridView.SelectedCells.Count > 0 && tmpDataGridView.SelectedCells[0].Value != null)
             {
                 var selectedRowIndex = (int)tmpDataGridView.SelectedCells[0].RowIndex;
                 selectedFood = (int)tmpDataGridView.Rows[selectedRowIndex].Cells[0].Value;
@@ -217,6 +218,14 @@ namespace SLQLite_Food_Tracker
                 {
                     dtpFoodDate.Value = foodDate;
                 }
+            }
+            else
+            {
+                // Handle the case where the selected cell is null (empty row)
+                // For example, you might want to clear the UI elements.
+                txtName.Text = string.Empty;
+                cmbMealName.Text = string.Empty;
+                dtpFoodDate.Value = DateTime.Now; // Set a default value or handle as needed
             }
         }
 

@@ -29,6 +29,11 @@ namespace SLQLite_Food_Tracker
             {
             Helper.Create(txtFood.Text, cmbMeal.Text, dtpDate.Value);
             Helper.Read(dgvData);
+            }else
+            {
+                MessageBox.Show("Please ensure all data is filled in");
+                Helper.Read(dgvData);
+
             }
         }
 
@@ -39,7 +44,7 @@ namespace SLQLite_Food_Tracker
             dgvData.Columns.Add("Name", "Name");
             dgvData.Columns.Add("MealId", "Meal");
             dgvData.Columns[0].Visible = false;
-
+            dgvData.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             Helper.GetMealsList(cmbMeal);
             Helper.Read(dgvData);
             dgvData.SelectionChanged += DgvData_SelectionChanged; ;
@@ -86,6 +91,32 @@ namespace SLQLite_Food_Tracker
             Helper.Delete();
             Helper.Read(dgvData);
 
+        }
+
+        private void btnCreate_DragOver(object sender, DragEventArgs e)
+        {
+           
+        }
+
+        private void btnCreate_MouseHover(object sender, EventArgs e)
+        {
+            btnCreate.BackColor = Color.DarkGreen;
+        }
+
+        private void btnCreate_MouseLeave(object sender, EventArgs e)
+        {
+            btnCreate.BackColor = Color.FromArgb(255, 255, 128);
+
+        }
+
+        private void btnUpdate_MouseHover(object sender, EventArgs e)
+        {
+            btnUpdate.BackColor = Color.Yellow;
+        }
+
+        private void btnUpdate_MouseLeave(object sender, EventArgs e)
+        {
+            btnCreate.BackColor = Color.FromArgb(255, 255, 128);
         }
     }
 }
